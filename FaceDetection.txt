@@ -1,0 +1,32 @@
+import smtplib
+import os
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.image import MIMEImage
+
+def send_alert(image_path):
+
+    sender_email = "your_email@gmail.com"
+    receiver_email = "receiver@gmail.com"
+    password = "your_app_password"
+
+    msg = MIMEMultipart()
+    msg["From"] = sender_email
+    msg["To"] = receiver_email
+    msg["Subject"] = "ALERT - Suspicious Object Detected"
+
+    body = "AI detected suspicious object"
+    msg.attach(MIMEText(body,"plain"))
+
+    with open(image_path,"rb") as file:
+        img = MIMEImage(file.read(),
+                        name=os.path.basename(image_path))
+        msg.attach(img)
+
+    server = smtplib.SMTP("smtp.gmail.com",587)
+    server.starttls()
+    server.login(sender_email,password)
+    server.send_message(msg)
+    server.quit()
+
+    print("Alert Sent")
